@@ -1,7 +1,5 @@
 #include <stdbool.h>
 
-#define TEMP_DISPLAY_DURATION_MS 3000 // Show temporary info for 3 seconds
-
 // Clears the entire dot matrix display
 extern void disp_hw_clear(void);
 

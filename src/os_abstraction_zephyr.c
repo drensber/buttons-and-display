@@ -12,3 +12,9 @@ bool rtos_queue_receive(RtosQueueHandle_t queue, void* buffer, uint32_t timeout_
     printf("Calling rtos_queue_receive()\n");
     return false;
 }
+
+bool rtos_queue_send(RtosQueueHandle_t queue, void* data, bool from_isr)
+{
+    printf("Calling rtos_queue_send(from_isr=%s)\n", from_isr ? "true" : "false");
+    return true;
+}

@@ -8,4 +8,4 @@ project(minimal)
 
 zephyr_include_directories(include)
 
-target_sources(app PRIVATE src/main.c src/display_manager.c src/display_driver.c src/os_abstraction_zephyr.c)
+target_sources(app PRIVATE src/main.c src/state_manager.c src/display_manager.c src/display_driver.c src/os_abstraction_zephyr.c)

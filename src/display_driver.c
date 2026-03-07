@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "hardware_abstraction_display.h"
+#include "hw_abstraction.h"
 
 void disp_hw_clear(void)
 {

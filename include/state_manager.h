@@ -17,9 +17,5 @@ typedef enum {
 // Main state manager task entry point
 extern void state_manager_task(RtosQueueHandle_t event_queue, RtosQueueHandle_t display_queue);
 
-// API for the OS abstraction layer/HAL to inject events into the state manager
-// The 'from_isr' flag allows the OS abstraction layer to use the correct RTOS queue function
-extern bool state_manager_post_event(RtosQueueHandle_t event_queue, StateEvent_t event, bool from_isr);
-
 #endif // STATE_MANAGER_H
 

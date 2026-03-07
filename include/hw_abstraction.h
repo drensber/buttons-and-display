@@ -8,3 +8,7 @@ extern void disp_hw_write_text(const char* text);
 
 // Controls the specific hardware pixel in the upper right corner
 extern void disp_hw_set_upper_right_dot(bool enable);
+
+// Reads the physical state of the buttons (true = pressed, false = released)
+extern bool hw_btn_read_alarm(void);
+extern bool hw_btn_read_digit(void);

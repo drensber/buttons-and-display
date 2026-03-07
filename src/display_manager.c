@@ -2,7 +2,7 @@
 #include <string.h>
 #include "display_manager.h"
 #include "os_abstraction.h"
-#include "hardware_abstraction_display.h"
+#include "hw_abstraction.h"
 
 static struct {
     DisplayViewState_t current_view;

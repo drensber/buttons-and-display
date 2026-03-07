@@ -13,7 +13,7 @@ target_sources(app PRIVATE
     src/state_manager.c 
     src/display_manager.c 
     src/display_driver.c 
-    src/button_driver.c
+    src/zephyr_button_driver.c
     src/button_listener.c
     src/os_abstraction_zephyr.c
 )

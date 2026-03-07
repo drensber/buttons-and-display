@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include "os_abstraction.h"
 
 // Clears the entire dot matrix display
 extern void disp_hw_clear(void);
@@ -10,5 +11,6 @@ extern void disp_hw_write_text(const char* text);
 extern void disp_hw_set_upper_right_dot(bool enable);
 
 // Reads the physical state of the buttons (true = pressed, false = released)
+extern bool hw_btn_semaphore_setup(RtosSemaphoreHandle_t);
 extern bool hw_btn_read_alarm(void);
 extern bool hw_btn_read_digit(void);

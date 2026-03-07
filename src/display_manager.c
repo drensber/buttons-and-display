@@ -4,6 +4,8 @@
 #include "os_abstraction.h"
 #include "hw_abstraction.h"
 
+RtosQueueHandle_t display_message_queue;
+
 static struct {
     DisplayViewState_t current_view;
     
@@ -55,7 +57,7 @@ static void render_display(void) {
  * Display Task - Main RTOS Entry Point                                      *
  * ========================================================================= */
 
-void display_task(RtosQueueHandle_t msg_queue) {
+void display_manager_task(void) {
     DisplayMsg_t msg;
 
     // Initialize state
@@ -65,22 +67,22 @@ void display_task(RtosQueueHandle_t msg_queue) {
 
     while (1) {
         // Wait indefinitely for a message.
-        if (rtos_queue_receive(msg_queue, &msg, RTOS_WAIT_FOREVER)) {
+        if (rtos_queue_receive(display_message_queue, &msg, RTOS_WAIT_FOREVER)) {
             
             // Process incoming message from higher-level state manager
-            switch (msg.type) {
-                case MSG_UPDATE_TIME:
+            switch (msg.event) {
+                case DISPLAY_EVENT_UPDATE_TIME:
                     display_manager_context.current_hours = msg.payload.time.hours;
                     display_manager_context.current_minutes = msg.payload.time.minutes;
                     break;
 
-                case MSG_UPDATE_ALARM_STATE:
+                case DISPLAY_EVENT_UPDATE_ALARM_STATE:
                     display_manager_context.alarm_is_set = msg.payload.alarm.is_set;
                     display_manager_context.alarm_hours = msg.payload.alarm.hours;
                     display_manager_context.alarm_minutes = msg.payload.alarm.minutes;
                     break;
 
-                case MSG_SET_ACTIVE_VIEW:
+                case DISPLAY_EVENT_SET_ACTIVE_VIEW:
                     display_manager_context.current_view = msg.payload.view_ctrl.view;
                     display_manager_context.temp_digit = msg.payload.view_ctrl.digit_val;
                     break;

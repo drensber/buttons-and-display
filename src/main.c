@@ -13,13 +13,12 @@
 
 int main(void)
 {
-    RtosQueueHandle_t display_queue = NULL;
-    RtosQueueHandle_t event_queue = NULL;    
+    //Iniitalize message queues here
     
     printk("Starting tasks!\n");
-    display_task(display_queue);
-    state_manager_task(event_queue, display_queue);
-    button_listener_task(event_queue, NULL);
+    display_manager_task();
+    state_manager_task();
+    button_listener_task();
         
     return 0;
 }

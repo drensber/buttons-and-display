@@ -1,11 +1,20 @@
+#include <stddef.h>
+#include <stdio.h>
 #include "button_listener.h"
 #include "state_manager.h"
 #include "hw_abstraction.h"
-#include <stddef.h>
 
-void button_listener_task(RtosQueueHandle_t event_queue, void* isr_semaphore) {
+void button_listener_task() {
+    StateMsg_t msg;
+    
     bool last_alarm_state = false;
     bool last_digit_state = false;
+
+    RtosSemaphoreHandle_t isr_semaphore = NULL;
+    if (!hw_btn_semaphore_setup(isr_semaphore)) {
+	printf("Problem setting up button semaphore\n");
+	return;
+    }
 
     while (1) {
         // 1. Sleep entirely until the actual hardware ISR gives this semaphore
@@ -20,14 +29,14 @@ void button_listener_task(RtosQueueHandle_t event_queue, void* isr_semaphore) {
 
         // 4. Compare to previous state and emit events ONLY on state changes
         if (current_alarm_state != last_alarm_state) {
-            StateEvent_t ev = current_alarm_state ? EV_BTN_ALARM_PRESSED : EV_BTN_ALARM_RELEASED;
-            rtos_queue_send(event_queue, &ev);
+            msg.event = current_alarm_state ? EVENT_BUTTON_ALARM_PRESSED : EVENT_BUTTON_ALARM_RELEASED;
+            rtos_queue_send(state_message_queue, &msg);
             last_alarm_state = current_alarm_state;
         }
 
         if (current_digit_state != last_digit_state) {
-            StateEvent_t ev = current_digit_state ? EV_BTN_DIGIT_PRESSED : EV_BTN_DIGIT_RELEASED;
-            rtos_queue_send(event_queue, &ev);
+            msg.event = current_digit_state ? EVENT_BUTTON_DIGIT_PRESSED : EVENT_BUTTON_DIGIT_RELEASED;
+            rtos_queue_send(state_message_queue, &msg);
             last_digit_state = current_digit_state;
         }
     }

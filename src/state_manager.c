@@ -1,6 +1,8 @@
 #include "state_manager.h"
 #include "display_manager.h"
 
+RtosQueueHandle_t state_message_queue;
+
 static struct {
     bool btn_alarm_active;
     bool btn_digit_active;
@@ -32,12 +34,12 @@ static void initialize_state_manager(void) {
 static void initialize_display(RtosQueueHandle_t queue) {
     // Initial push to the display
     DisplayMsg_t init_msg;
-    init_msg.type = MSG_UPDATE_TIME;
+    init_msg.event = DISPLAY_EVENT_UPDATE_TIME;
     init_msg.payload.time.hours = sm_ctx.sys_hours;
     init_msg.payload.time.minutes = sm_ctx.sys_minutes;
     rtos_queue_send(queue, &init_msg);
 
-    init_msg.type = MSG_UPDATE_ALARM_STATE;
+    init_msg.event = DISPLAY_EVENT_UPDATE_ALARM_STATE;
     init_msg.payload.alarm.is_set = sm_ctx.alarm_enabled;
     init_msg.payload.alarm.hours = sm_ctx.alarm_hours;
     init_msg.payload.alarm.minutes = sm_ctx.alarm_minutes;
@@ -46,48 +48,47 @@ static void initialize_display(RtosQueueHandle_t queue) {
 
 }
 
-void state_manager_task(RtosQueueHandle_t event_queue,
-			RtosQueueHandle_t display_queue) {
-    StateEvent_t event;
+void state_manager_task(void) {
+    StateMsg_t msg;
 
     initialize_state_manager();
 
-    initialize_display(display_queue);
+    initialize_display(display_message_queue);
 
     while (1) {
         // Wait for an event from the button listener or system timer
-        if (rtos_queue_receive(event_queue, &event, RTOS_WAIT_FOREVER)) {
+        if (rtos_queue_receive(state_message_queue, &msg, RTOS_WAIT_FOREVER)) {
             
             bool evaluate_view = false;
 
             // 1. Process the incoming event
-            switch (event) {
-                case EV_BTN_ALARM_PRESSED:
+            switch (msg.event) {
+                case EVENT_BUTTON_ALARM_PRESSED:
                     sm_ctx.btn_alarm_active = true;
                     evaluate_view = true;
                     break;
-                case EV_BTN_ALARM_RELEASED:
+                case EVENT_BUTTON_ALARM_RELEASED:
                     sm_ctx.btn_alarm_active = false;
                     evaluate_view = true;
                     break;
-                case EV_BTN_DIGIT_PRESSED:
+                case EVENT_BUTTON_DIGIT_PRESSED:
                     sm_ctx.btn_digit_active = true;
                     evaluate_view = true;
                     break;
-                case EV_BTN_DIGIT_RELEASED:
+                case EVENT_BUTTON_DIGIT_RELEASED:
                     sm_ctx.btn_digit_active = false;
                     evaluate_view = true;
                     break;
-                case EV_SYS_TICK_MINUTE:
+                case EVENT_SYS_TICK_MINUTE:
                     sm_ctx.sys_minutes++;
                     if (sm_ctx.sys_minutes >= 60) {
 			sm_ctx.sys_minutes = 0;
 			sm_ctx.sys_hours = (sm_ctx.sys_hours + 1) % 24;
 		    }                    
-                    DisplayMsg_t time_msg = { .type = MSG_UPDATE_TIME };
+                    DisplayMsg_t time_msg = { .event = DISPLAY_EVENT_UPDATE_TIME };
                     time_msg.payload.time.hours = sm_ctx.sys_hours;
                     time_msg.payload.time.minutes = sm_ctx.sys_minutes;
-                    rtos_queue_send(display_queue, &time_msg);
+                    rtos_queue_send(display_message_queue, &time_msg);
                     break;
             }
 
@@ -106,11 +107,11 @@ void state_manager_task(RtosQueueHandle_t event_queue,
                 if (target_view != sm_ctx.current_view) {
                     sm_ctx.current_view = target_view;
                     
-                    DisplayMsg_t view_msg = { .type = MSG_SET_ACTIVE_VIEW };
+                    DisplayMsg_t view_msg = { .event = DISPLAY_EVENT_SET_ACTIVE_VIEW };
                     view_msg.payload.view_ctrl.view = sm_ctx.current_view;
                     view_msg.payload.view_ctrl.digit_val = sm_ctx.display_digit;
                     
-                    rtos_queue_send(display_queue, &view_msg);
+                    rtos_queue_send(display_message_queue, &view_msg);
                 }
             }
         }

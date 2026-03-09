@@ -1,3 +1,6 @@
+#ifndef DISPLAY_MANAGER_H
+#define DISPLAY_MANAGER_H
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -30,3 +33,5 @@ extern RtosQueueHandle_t display_message_queue;
 
 // Display manager task entry point
 extern void display_manager_task();
+
+#endif // DISPLAY_MANAGER_H

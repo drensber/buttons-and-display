@@ -2,10 +2,11 @@
 #include "hw_abstraction.h"
 
 
-bool hw_btn_semaphore_setup(RtosSemaphoreHandle_t button_semaphore)
+RtosSemaphoreHandle_t hw_btn_semaphore_setup(void)
 {
     // Mock implementation`
-    return false;
+    RtosSemaphoreHandle_t handle = NULL;
+    return handle;
 }
 
 bool hw_btn_read_alarm(void)

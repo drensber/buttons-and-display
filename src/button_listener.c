@@ -10,15 +10,17 @@ void button_listener_task() {
     bool last_alarm_state = false;
     bool last_digit_state = false;
 
-    RtosSemaphoreHandle_t isr_semaphore = NULL;
-    if (!hw_btn_semaphore_setup(isr_semaphore)) {
+    RtosSemaphoreHandle_t hw_btn_isr_semaphore
+	= hw_btn_semaphore_setup();
+   
+    if (hw_btn_isr_semaphore == NULL) {
 	printf("Problem setting up button semaphore\n");
 	return;
     }
 
     while (1) {
         // 1. Sleep entirely until the actual hardware ISR gives this semaphore
-        rtos_semaphore_wait(isr_semaphore, RTOS_WAIT_FOREVER);
+        rtos_semaphore_wait(hw_btn_isr_semaphore, RTOS_WAIT_FOREVER);
 
         // 2. Debounce: Wait 20ms for the physical switch contacts to settle
         rtos_delay_ms(20);

@@ -29,3 +29,17 @@ void rtos_delay_ms(uint32_t ms)
 {
     printf("Calling rtos_delay_ms(ms=%u)\n", ms);
 }
+
+bool rtos_thread_create(RtosTaskFunction_t task_func, 
+			const char* task_name, 
+			uint32_t stack_size, 
+			RtosTaskPriority_t priority)
+{
+    printf("Calling rtos_thread_create()\n");
+    return false;
+}
+
+void rtos_start_scheduler(void) {
+    printf("Calling rtos_start_scheduler() (in Zephyr, this ia a NOP)\n");
+    return;
+}

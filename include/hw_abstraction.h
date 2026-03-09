@@ -1,3 +1,6 @@
+#ifndef HW_ABSTRACTION_H
+#define HW_ABSTRACTION_H
+
 #include <stdbool.h>
 #include "os_abstraction.h"
 
@@ -11,6 +14,8 @@ extern void disp_hw_write_text(const char* text);
 extern void disp_hw_set_upper_right_dot(bool enable);
 
 // Reads the physical state of the buttons (true = pressed, false = released)
-extern bool hw_btn_semaphore_setup(RtosSemaphoreHandle_t);
+extern RtosSemaphoreHandle_t hw_btn_semaphore_setup(void);
 extern bool hw_btn_read_alarm(void);
 extern bool hw_btn_read_digit(void);
+
+#endif // HW_ABSTRACTION_H

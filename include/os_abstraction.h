@@ -1,3 +1,6 @@
+#ifndef OS_ABSTRACTION_H
+#define OS_ABSTRACTION_H
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -24,3 +27,33 @@ typedef void* RtosSemaphoreHandle_t;
 
 extern void rtos_semaphore_wait(RtosSemaphoreHandle_t semaphore,
 				uint32_t timeout_ms);
+
+//Threads
+// Define the signature for a task entry point
+typedef void (*RtosTaskFunction_t)(void);
+
+typedef enum {
+    TASK_PRIORITY_LOWEST,
+    TASK_PRIORITY_LOW,
+    TASK_PRIORITY_MEDIUM,
+    TASK_PRIORITY_HIGH,
+    TASK_PRIORITY_HIGHEST
+} RtosTaskPriority_t;
+
+
+// Abstract thread creation
+// Returns true on success, false on failure
+extern bool rtos_thread_create(
+    RtosTaskFunction_t task_func, 
+    const char* task_name, 
+    uint32_t stack_size, 
+    RtosTaskPriority_t priority
+);
+
+// Optional: A function to start the RTOS scheduler (if required by the
+// underlying OS).
+// Note: Zephyr starts its scheduler automatically before main(),
+// but FreeRTOS requires this.
+extern void rtos_start_scheduler(void);
+
+#endif // OS_ABSTRACTION_H

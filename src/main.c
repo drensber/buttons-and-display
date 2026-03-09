@@ -16,9 +16,14 @@ int main(void)
     //Iniitalize message queues here
     
     printk("Starting tasks!\n");
-    display_manager_task();
-    state_manager_task();
-    button_listener_task();
+    rtos_thread_create(display_manager_task, "DisplayManagerTask",
+		       1024, TASK_PRIORITY_MEDIUM);
+    rtos_thread_create(button_listener_task, "ButtonListenerTask",
+		       1024, TASK_PRIORITY_MEDIUM);
+    rtos_thread_create(state_manager_task, "StateManagerTask",
+		       1024, TASK_PRIORITY_MEDIUM);
+
+    rtos_start_scheduler();
         
     return 0;
 }

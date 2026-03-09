@@ -4,7 +4,8 @@
 #include "state_manager.h"
 #include "hw_abstraction.h"
 
-void button_listener_task() {
+void button_listener_task()
+{
     StateMsg_t msg;
     
     bool last_alarm_state = false;

@@ -16,7 +16,8 @@ static struct {
     uint8_t display_digit; 
 } sm_ctx;
 
-static void initialize_state_manager(void) {
+static void initialize_state_manager(void)
+{
     // Internal state tracking
     sm_ctx.btn_alarm_active = false;
     sm_ctx.btn_digit_active = false;
@@ -31,7 +32,8 @@ static void initialize_state_manager(void) {
     sm_ctx.display_digit = 8; 
 }
 
-static void initialize_display(RtosQueueHandle_t queue) {
+static void initialize_display(RtosQueueHandle_t queue)
+{
     // Initial push to the display
     DisplayMsg_t init_msg;
     init_msg.event = DISPLAY_EVENT_UPDATE_TIME;
@@ -48,7 +50,8 @@ static void initialize_display(RtosQueueHandle_t queue) {
 
 }
 
-void state_manager_task(void) {
+void state_manager_task(void)
+{
     StateMsg_t msg;
 
     initialize_state_manager();

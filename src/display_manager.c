@@ -21,7 +21,8 @@ static struct {
 
 
 // Helper function to render the current state to the hardware
-static void render_display(void) {
+static void render_display(void)
+{
     char render_buffer[8]; // Enough to hold "HH:MM" + null terminator
     
     disp_hw_clear();
@@ -53,11 +54,8 @@ static void render_display(void) {
     disp_hw_set_upper_right_dot(display_manager_context.alarm_is_set);
 }
 
-/* ========================================================================= *
- * Display Task - Main RTOS Entry Point                                      *
- * ========================================================================= */
-
-void display_manager_task(void) {
+void display_manager_task(void)
+{
     DisplayMsg_t msg;
 
     // Initialize state

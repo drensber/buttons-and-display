@@ -34,7 +34,8 @@ extern void rtos_delay_ms(uint32_t ms);
 /*** Queues ***/
 typedef void* RtosQueueHandle_t;
 
-extern bool rtos_initialize_queue(RtosQueueHandle_t queue);
+extern RtosQueueHandle_t rtos_queue_create(uint32_t queue_length,
+					   uint32_t item_size);
 extern bool rtos_queue_receive(RtosQueueHandle_t queue,
 			       void* buffer, uint32_t timeout_ms);
 extern bool rtos_queue_send(RtosQueueHandle_t queue, void* data);

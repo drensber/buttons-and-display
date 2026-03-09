@@ -4,7 +4,7 @@
 #include "state_manager.h"
 #include "hw_abstraction.h"
 
-void button_listener_task()
+void button_listener_task(void)
 {
     StateMsg_t msg;
     
@@ -43,4 +43,5 @@ void button_listener_task()
             last_digit_state = current_digit_state;
         }
     }
+    return;
 }

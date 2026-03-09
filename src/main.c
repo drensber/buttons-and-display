@@ -28,8 +28,8 @@ int main(void)
 {
     //Iniitalize message queues here
     printf("Initializing queues.\n");
-    rtos_initialize_queue(state_message_queue);
-    rtos_initialize_queue(display_message_queue);
+    state_message_queue = rtos_queue_create(10, sizeof(StateMsg_t));
+    display_message_queue = rtos_queue_create(10, sizeof(DisplayMsg_t));
     
     // Create and initialize tasks
     printf("Starting tasks.\n");
@@ -39,8 +39,6 @@ int main(void)
 		       1024, TASK_PRIORITY_MEDIUM);
     rtos_thread_create(state_manager_task, "StateManagerTask",
 		       1024, TASK_PRIORITY_MEDIUM);
-
-    rtos_start_scheduler();
 
     printf("Setting \"minute change\" timer...\n");    
     // Create a timer that fires every 60,000 ms (1 minute) and repeats (true)
@@ -53,7 +51,8 @@ int main(void)
     
     // Start the timer ticking
     rtos_timer_start(minute_timer);    
-    
-        
+
+    // This must be at the end, since it blocks forever
+    rtos_start_scheduler();        
     return 0;
 }

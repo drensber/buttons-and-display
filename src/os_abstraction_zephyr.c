@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <zephyr/kernel.h>
 #include "os_abstraction.h"
 
 uint32_t rtos_get_time_ms(void)
@@ -7,10 +8,10 @@ uint32_t rtos_get_time_ms(void)
     return 0;
 }
 
-bool rtos_initialize_queue(RtosQueueHandle_t queue)
+RtosQueueHandle_t rtos_queue_create(uint32_t queue_length, uint32_t item_size)
 {
-    printf("Calling rtos_initialize_queue()\n");
-    return true;
+    printf("Creating queue (Len: %u, Item Size: %u bytes)\n", queue_length, item_size);
+    return (RtosQueueHandle_t)1; // Dummy non-null pointer
 }
 
 bool rtos_queue_receive(RtosQueueHandle_t queue, void* buffer, uint32_t timeout_ms)
@@ -34,6 +35,7 @@ void rtos_semaphore_wait(void* semaphore, uint32_t timeout_ms)
 void rtos_delay_ms(uint32_t ms)
 {
     printf("Calling rtos_delay_ms(ms=%u)\n", ms);
+    return;
 }
 
 bool rtos_thread_create(RtosTaskFunction_t task_func, 
@@ -47,7 +49,8 @@ bool rtos_thread_create(RtosTaskFunction_t task_func,
 
 void rtos_start_scheduler(void)
 {
-    printf("Calling rtos_start_scheduler() (in Zephyr, this ia a NOP)\n");
+    printf("Calling rtos_start_scheduler() (in Zephyr, this ia a block-forever NOP)\n");
+    k_sleep(K_FOREVER);
     return;
 }
 

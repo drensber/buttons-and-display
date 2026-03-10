@@ -61,6 +61,65 @@ void minute_tick_callback(void)
     rtos_queue_send(state_message_queue, &msg);
 }
 
+void state_manager_process_event(StateMsg_t *msg)
+{
+    bool evaluate_view = false;
+
+    // 1. Process the incoming event
+    switch (msg->event) {
+        case EVENT_BUTTON_ALARM_PRESSED:
+            sm_ctx.btn_alarm_active = true;
+            evaluate_view = true;
+            break;
+        case EVENT_BUTTON_ALARM_RELEASED:
+            sm_ctx.btn_alarm_active = false;
+            evaluate_view = true;
+            break;
+        case EVENT_BUTTON_DIGIT_PRESSED:
+            sm_ctx.btn_digit_active = true;
+            evaluate_view = true;
+            break;
+        case EVENT_BUTTON_DIGIT_RELEASED:
+            sm_ctx.btn_digit_active = false;
+            evaluate_view = true;
+            break;
+        case EVENT_SYS_TICK_MINUTE:
+            sm_ctx.sys_minutes++;
+            if (sm_ctx.sys_minutes >= 60) {
+                sm_ctx.sys_minutes = 0;
+                sm_ctx.sys_hours = (sm_ctx.sys_hours + 1) % 24;
+            }                    
+            DisplayMsg_t time_msg = { .event = DISPLAY_EVENT_UPDATE_TIME };
+            time_msg.payload.time.hours = sm_ctx.sys_hours;
+            time_msg.payload.time.minutes = sm_ctx.sys_minutes;
+            rtos_queue_send(display_message_queue, &time_msg);
+            break;
+    }
+
+    // 2. Resolve View Priority
+    if (evaluate_view) {
+        DisplayViewState_t target_view = VIEW_STATE_TIME;
+
+        if (sm_ctx.btn_digit_active) {
+            target_view = VIEW_STATE_DIGIT;
+        } else if (sm_ctx.btn_alarm_active) {
+            target_view = VIEW_STATE_ALARM;
+        }
+
+        // 3. Command the Display (only if state changed)
+        if (target_view != sm_ctx.current_view) {
+            sm_ctx.current_view = target_view;
+            
+            DisplayMsg_t view_msg = { .event = DISPLAY_EVENT_SET_ACTIVE_VIEW };
+            view_msg.payload.view_ctrl.view = sm_ctx.current_view;
+            view_msg.payload.view_ctrl.digit_val = sm_ctx.display_digit;
+            
+            rtos_queue_send(display_message_queue, &view_msg);
+        }
+    }
+}
+
+
 void state_manager_task(void)
 {
     StateMsg_t msg;
@@ -72,62 +131,7 @@ void state_manager_task(void)
     while (1) {
         // Wait for an event from the button listener or system timer
         if (rtos_queue_receive(state_message_queue, &msg, RTOS_WAIT_FOREVER)) {
-            
-            bool evaluate_view = false;
-
-            // 1. Process the incoming event
-            switch (msg.event) {
-                case EVENT_BUTTON_ALARM_PRESSED:
-                    sm_ctx.btn_alarm_active = true;
-                    evaluate_view = true;
-                    break;
-                case EVENT_BUTTON_ALARM_RELEASED:
-                    sm_ctx.btn_alarm_active = false;
-                    evaluate_view = true;
-                    break;
-                case EVENT_BUTTON_DIGIT_PRESSED:
-                    sm_ctx.btn_digit_active = true;
-                    evaluate_view = true;
-                    break;
-                case EVENT_BUTTON_DIGIT_RELEASED:
-                    sm_ctx.btn_digit_active = false;
-                    evaluate_view = true;
-                    break;
-                case EVENT_SYS_TICK_MINUTE:
-                    sm_ctx.sys_minutes++;
-                    if (sm_ctx.sys_minutes >= 60) {
-			sm_ctx.sys_minutes = 0;
-			sm_ctx.sys_hours = (sm_ctx.sys_hours + 1) % 24;
-		    }                    
-                    DisplayMsg_t time_msg = { .event = DISPLAY_EVENT_UPDATE_TIME };
-                    time_msg.payload.time.hours = sm_ctx.sys_hours;
-                    time_msg.payload.time.minutes = sm_ctx.sys_minutes;
-                    rtos_queue_send(display_message_queue, &time_msg);
-                    break;
-            }
-
-            // 2. Resolve View Priority
-            if (evaluate_view) {
-                DisplayViewState_t target_view = VIEW_STATE_TIME;
-
-                // Priority Logic: Digit overrides Alarm
-                if (sm_ctx.btn_digit_active) {
-                    target_view = VIEW_STATE_DIGIT;
-                } else if (sm_ctx.btn_alarm_active) {
-                    target_view = VIEW_STATE_ALARM;
-                }
-
-                // 3. Command the Display (only if state changed)
-                if (target_view != sm_ctx.current_view) {
-                    sm_ctx.current_view = target_view;
-                    
-                    DisplayMsg_t view_msg = { .event = DISPLAY_EVENT_SET_ACTIVE_VIEW };
-                    view_msg.payload.view_ctrl.view = sm_ctx.current_view;
-                    view_msg.payload.view_ctrl.digit_val = sm_ctx.display_digit;
-                    
-                    rtos_queue_send(display_message_queue, &view_msg);
-                }
-            }
+	    state_manager_process_event(&msg);
         }
     }
 }

@@ -33,5 +33,6 @@ extern RtosQueueHandle_t display_message_queue;
 
 // Display manager task entry point
 extern void display_manager_task();
+extern void display_manager_process_event(DisplayMsg_t *);
 
 #endif // DISPLAY_MANAGER_H

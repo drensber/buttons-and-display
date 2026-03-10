@@ -23,6 +23,7 @@ extern RtosQueueHandle_t state_message_queue;
 
 // Main state manager task entry point
 extern void state_manager_task(void);
+extern void state_manager_process_event(StateMsg_t *msg);
 
 #endif // STATE_MANAGER_H
 

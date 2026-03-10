@@ -52,6 +52,30 @@ static void render_display(void)
     disp_hw_set_upper_right_dot(display_manager_context.alarm_is_set);
 }
 
+void display_manager_process_event(DisplayMsg_t *msg)
+{
+    // Process incoming message from higher-level state manager
+    switch (msg->event) {
+    case DISPLAY_EVENT_UPDATE_TIME:
+	display_manager_context.current_hours = msg->payload.time.hours;
+	display_manager_context.current_minutes = msg->payload.time.minutes;
+	break;
+
+    case DISPLAY_EVENT_UPDATE_ALARM_STATE:
+	display_manager_context.alarm_is_set = msg->payload.alarm.is_set;
+	display_manager_context.alarm_hours = msg->payload.alarm.hours;
+	display_manager_context.alarm_minutes = msg->payload.alarm.minutes;
+	break;
+
+    case DISPLAY_EVENT_SET_ACTIVE_VIEW:
+	display_manager_context.current_view = msg->payload.view_ctrl.view;
+	display_manager_context.temp_digit = msg->payload.view_ctrl.digit_val;
+	break;
+    }
+
+    render_display();
+}
+
 void display_manager_task(void)
 {
     DisplayMsg_t msg;
@@ -64,27 +88,7 @@ void display_manager_task(void)
     while (1) {
         // Wait indefinitely for a message.
         if (rtos_queue_receive(display_message_queue, &msg, RTOS_WAIT_FOREVER)) {
-            
-            // Process incoming message from higher-level state manager
-            switch (msg.event) {
-                case DISPLAY_EVENT_UPDATE_TIME:
-                    display_manager_context.current_hours = msg.payload.time.hours;
-                    display_manager_context.current_minutes = msg.payload.time.minutes;
-                    break;
-
-                case DISPLAY_EVENT_UPDATE_ALARM_STATE:
-                    display_manager_context.alarm_is_set = msg.payload.alarm.is_set;
-                    display_manager_context.alarm_hours = msg.payload.alarm.hours;
-                    display_manager_context.alarm_minutes = msg.payload.alarm.minutes;
-                    break;
-
-                case DISPLAY_EVENT_SET_ACTIVE_VIEW:
-                    display_manager_context.current_view = msg.payload.view_ctrl.view;
-                    display_manager_context.temp_digit = msg.payload.view_ctrl.digit_val;
-                    break;
-            }
-
-            render_display();
-        }
+            display_manager_process_event(&msg);
+	}
     }
 }

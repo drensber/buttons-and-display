@@ -36,8 +36,8 @@ else()
         src/state_manager.c 
         src/display_manager.c 
         src/button_listener.c
-        src/os_abstraction_zephyr.c
-        src/zephyr_display_driver.c 
-        src/zephyr_button_driver.c    
+        src/zephyr/os_abstraction_zephyr.c
+        src/zephyr/zephyr_display_driver.c 
+        src/zephyr/zephyr_button_driver.c    
     )
 endif()

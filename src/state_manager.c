@@ -14,7 +14,7 @@ static struct {
     uint8_t display_digit; 
 } sm_ctx;
 
-static void initialize_state_manager(void)
+static void initialize_sm_ctx(void)
 {
     // Internal state tracking
     sm_ctx.btn_alarm_active = false;
@@ -119,15 +119,19 @@ void state_manager_process_event(StateMsg_t *msg)
     }
 }
 
+void initialize_state_manager(void)
+{
+    initialize_sm_ctx();
+
+    initialize_display(display_message_queue);
+}
 
 void state_manager_task(void)
 {
     StateMsg_t msg;
 
     initialize_state_manager();
-
-    initialize_display(display_message_queue);
-
+    
     while (1) {
         // Wait for an event from the button listener or system timer
         if (rtos_queue_receive(state_message_queue, &msg, RTOS_WAIT_FOREVER)) {

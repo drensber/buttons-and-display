@@ -76,15 +76,20 @@ void display_manager_process_event(DisplayMsg_t *msg)
     render_display();
 }
 
+void initialize_display_manager(void)
+{
+    memset(&display_manager_context, 0, sizeof(display_manager_context));
+    display_manager_context.current_view = VIEW_STATE_TIME;
+    render_display();
+}
+
 void display_manager_task(void)
 {
     DisplayMsg_t msg;
 
     // Initialize state
-    memset(&display_manager_context, 0, sizeof(display_manager_context));
-    display_manager_context.current_view = VIEW_STATE_TIME;
-    render_display();
-
+    initialize_display_manager();
+    
     while (1) {
         // Wait indefinitely for a message.
         if (rtos_queue_receive(display_message_queue, &msg, RTOS_WAIT_FOREVER)) {

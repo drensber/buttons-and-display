@@ -32,6 +32,7 @@ typedef struct {
 extern RtosQueueHandle_t display_message_queue;
 
 // Display manager task entry point
+extern void initialize_display_manager(void);
 extern void display_manager_task();
 extern void display_manager_process_event(DisplayMsg_t *);
 

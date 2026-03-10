@@ -4,8 +4,6 @@
 #include "os_abstraction.h"
 #include "hw_abstraction.h"
 
-RtosQueueHandle_t display_message_queue;
-
 static struct {
     DisplayViewState_t current_view;
     

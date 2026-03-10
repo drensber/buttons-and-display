@@ -1,8 +1,6 @@
 #include "state_manager.h"
 #include "display_manager.h"
 
-RtosQueueHandle_t state_message_queue;
-
 static struct {
     bool btn_alarm_active;
     bool btn_digit_active;
@@ -48,6 +46,19 @@ static void initialize_display(RtosQueueHandle_t queue)
     rtos_queue_send(queue, &init_msg);
 
 
+}
+
+// The function the OS will call every time the timer expires
+void minute_tick_callback(void)
+{
+    StateMsg_t msg;
+    msg.event = EVENT_SYS_TICK_MINUTE;
+    
+    // Drop the event into the queue.
+    // (In a real Zephyr/FreeRTOS implementation behind your OSAL, this 
+    // underlying queue send needs to have a timeout of 0 / K_NO_WAIT 
+    // so it doesn't block the OS timer daemon!)
+    rtos_queue_send(state_message_queue, &msg);
 }
 
 void state_manager_task(void)

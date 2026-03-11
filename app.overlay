@@ -1,0 +1,24 @@
+/ {
+    aliases {
+        alarm-button = &button_alarm;
+        digit-button = &button_digit;
+    };
+
+    gpio_keys {
+        compatible = "gpio-keys";
+        
+        button_alarm: button_alarm {
+            /* GPIO 4, enable internal pull-up,
+               and treat LOW as logically active */
+            gpios = <&gpio0 4 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+            label = "Alarm Button";
+        };
+
+        button_digit: button_digit {
+            /* GPIO 5, enable internal pull-up,
+               and treat LOW as logically active */
+            gpios = <&gpio0 5 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+            label = "Digit Button";
+        };
+    };
+};

@@ -110,21 +110,26 @@ int main(void) {
     // Run the tests
     clear_display_queue();
 
-    //alarm-press by itself
+    printf("\n\nalarm-press by itself\n");    
     test_alarm_button_press(VIEW_STATE_ALARM);
     test_alarm_button_release(VIEW_STATE_TIME);
 
-    //digit-press by itself
+    printf("\n\ndigit-press by itself\n");
     test_digit_button_press(VIEW_STATE_DIGIT);
     test_digit_button_release(VIEW_STATE_TIME);
 
-    printf("\n\n");
-    //alarm-press, digit-press, digit-release, alarm-release
+    printf("\n\nalarm-press, digit-press, digit-release, alarm-release\n");
     test_alarm_button_press(VIEW_STATE_ALARM);
     test_digit_button_press(VIEW_STATE_DIGIT);
     test_digit_button_release(VIEW_STATE_ALARM);
-    test_alarm_button_release(VIEW_STATE_TIME);    
+    test_alarm_button_release(VIEW_STATE_TIME);
     
+    printf("\n\ndigit-press, alarm-press, alarm-release, digit-release\n");
+    test_digit_button_press(VIEW_STATE_DIGIT);
+    test_alarm_button_press(VIEW_STATE_ALARM);
+    test_alarm_button_release(VIEW_STATE_DIGIT);    
+    test_digit_button_release(VIEW_STATE_TIME);
+
     // Add more tests here...
     
     printf("All tests passed successfully!\n");

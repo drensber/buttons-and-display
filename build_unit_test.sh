@@ -6,7 +6,7 @@ mkdir build_tests
 cd build_tests
 
 # Configure CMake with the test flag
-cmake -DBUILD_UNIT_TESTS=ON ..
+cmake -DBUILD_UNIT_TESTS=ON ../ports/host_test
 
 # Compile it
 make

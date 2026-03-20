@@ -1,6 +1,8 @@
 # Button controlled display
 
-This ia a fairly simple example of a program that will change the state of a time display depending on buttons that are pressed and held or released.
+Change the state of a time display depending on the state of buttons that are pressed and held or released.
+
+It's fairly simple and generic embedded software functionality. The more novel thing I've done here is make all of the application-level code use an abstraction layer that can be linked against either FreeRTOS, Zephyr, or a unit test environement.
 
 ## Building the code
 
